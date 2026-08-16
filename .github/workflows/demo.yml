@@ -57,6 +57,6 @@ jobs:
       - name: List downloaded artifacts
         run: ls
       - name: Output filename
-        run: echo "${{needs.build}}"
+        run: echo "${{needs.build.outputs.script-file}}"
       - name: Deploy
         run: echo "Deploying..."
