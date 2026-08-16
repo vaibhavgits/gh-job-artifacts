@@ -25,6 +25,7 @@ jobs:
         run: npm ci
       - name: Build website
         run: npm run build
+        # dist stands for Distribution (or Distributable). It contains the final, standalone product that you distribute to a web server.
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -42,5 +43,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+        # name of artifacts that you want to download
+          name: dist-files
       - name: Deploy
         run: echo "Deploying..."
