@@ -30,6 +30,14 @@ jobs:
         with:
           name: dist-files
           path: dist
+
+      # - name: Upload multiple artifacts
+      #   uses: actions/upload-artifact@v7
+      #   with:
+      #     name: dist-files
+      #     path: |
+            # dist
+            # package.json
   deploy:
     needs: build
     runs-on: ubuntu-latest
