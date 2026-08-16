@@ -1,0 +1,69 @@
+name: Deploy website
+on:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v7
+      - name: Caching Dependency
+        uses: actions/cache@v4
+        with:
+          # npm uses this path for caching and we want to cache this. 
+          path: ~/.npm
+          # this key will be used to retrieve the cache stored on github server
+          key: dep-node-modules-${{hashFiles('**/package-lock.json')}}
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
+      - name: Test code
+        run: npm run test
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      script-file: ${{steps.publish.outputs.output-file}}
+    steps:
+      - name: Get code
+        uses: actions/checkout@v7
+      - name: Install dependencies
+        run: npm ci
+      - name: Build website
+        run: npm run build
+      - name: Publish JS filename
+        id: publish
+        run: find dist/assets/*.js -type f -execdir echo 'output-file={}' >> $GITHUB_OUTPUT ';' 
+        # dist stands for Distribution (or Distributable). It contains the final, 
+        # standalone product that you distribute to a web server.
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist-files
+          path: dist
+
+      # - name: Upload multiple artifacts
+      #   uses: actions/upload-artifact@v7
+      #   with:
+      #     name: dist-files
+      #     path: |
+            # dist
+            # package.json
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+        # name of artifacts that you want to download
+          name: dist-files
+      - name: List downloaded artifacts
+        run: ls
+      - name: Output filename
+        run: echo "${{needs.build.outputs.script-file}}"
+      - name: Deploy
+        run: echo "Deploying..."
