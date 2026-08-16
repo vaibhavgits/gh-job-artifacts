@@ -48,5 +48,7 @@ jobs:
         with:
         # name of artifacts that you want to download
           name: dist-files
+      - name: List downloaded artifacts
+        run: ls
       - name: Deploy
         run: echo "Deploying..."
