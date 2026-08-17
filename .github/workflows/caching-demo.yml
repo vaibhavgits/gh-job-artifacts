@@ -63,6 +63,7 @@ jobs:
           name: dist-files
       - name: List downloaded artifacts
         run: ls
+      # output file name
       - name: Output filename
         run: echo "${{needs.build.outputs.script-file}}"
       - name: Deploy
